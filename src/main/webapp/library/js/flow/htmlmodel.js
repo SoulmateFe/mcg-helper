@@ -36,43 +36,51 @@ function createHtmlModal(id, param) {
 		} else if($("#"+id).attr("eletype") == "json") {
 			url = "/html/flowJsonModal";
 			option["title"] = "json控件";
-			option["width"] = 1000;			
+			option["width"] = 1000;
 		} else if($("#"+id).attr("eletype") == "sqlQuery") {
 			url = "/html/flowSqlQueryModal";
 			option["title"] = "sql查询";
-			option["width"] = 1000;			
+			option["width"] = 1000;
 		} else if($("#"+id).attr("eletype") == "sqlExecute") {
 			url = "/html/flowSqlExecuteModal";
 			option["title"] = "sql执行";
-			option["width"] = 1000;			
+			option["width"] = 1000;
 		} else if($("#"+id).attr("eletype") == "data") {
 			url = "/html/flowDataModal";
 			option["title"] = "data控件";
-			option["width"] = 1100;				
+			option["width"] = 1100;
 		} else if($("#"+id).attr("eletype") == "start") {
 			url = "/html/flowStartModal";
 			option["title"] = "开始控件";
-			option["width"] = 800;				
+			option["width"] = 800;
 		} else if($("#"+id).attr("eletype") == "text"){
 			url = "/html/flowTextModal";
 			option["title"] = "文本控件";
-			option["width"] = 1100;				
+			option["width"] = 1100;
 		} else if($("#"+id).attr("eletype") == "gmybatis") {
 			url = "/html/flowGmybatisModal";
 			option["title"] = "mybatis控件";
-			option["width"] = 1100;				
+			option["width"] = 1100;
 		} else if($("#"+id).attr("eletype") == "script") {
 			url = "/html/flowScriptModal";
 			option["title"] = "js控件";
-			option["width"] = 1100;				
+			option["width"] = 1100;
 		} else if($("#"+id).attr("eletype") == "java") {
 			url = "/html/flowJavaModal";
 			option["title"] = "java控件";
-			option["width"] = 1100;				
+			option["width"] = 1100;
+		} else if($("#"+id).attr("eletype") == "python") {
+			url = "/html/flowPythonModal";
+			option["title"] = "python控件";
+			option["width"] = 1100;
+		} else if($("#"+id).attr("eletype") == "linux") {
+			url = "/html/flowLinuxModal";
+			option["title"] = "linux控件";
+			option["width"] = 1100;
 		} else if($("#"+id).attr("eletype") == "end") {
 			url = "/html/flowEndModal";
 			option["title"] = "结束控件";
-			option["width"] = 800;				
+			option["width"] = 800;
 		}
 
 		param["modalId"] = modalId.replace(/_Modal/g, "");
@@ -102,7 +110,7 @@ function setDialogBtns(param) {
 	if(param.eletype == "start") {
 		buttons = [
 			{
-				class: "btn btn-default",			
+				class: "btn btn-default",
 				text: "增加",
 				click: function() {
 					var tableData = $("#" + param.modalId + "_flowStartTable").bootstrapTable('getData');
@@ -627,6 +635,75 @@ function setDialogBtns(param) {
 				}
 			}
 		];			
+	} else if(param.eletype == "python") {
+		buttons = [
+					{
+						class: "btn btn-primary",			
+						text: "保存",
+						click: function() {
+							var _this = this;
+							var data = $("#" + param.modalId + "_pythonForm").serializeJSON();
+							var result = JSON.parse(data);
+							var pythonCore = {};
+							pythonCore["source"] = param.editor.getValue();
+							result["pythonCore"] = pythonCore; 
+							common.ajax({
+								url : "/flow/savePython",
+								type : "POST",
+								data : JSON.stringify(result),
+								contentType : "application/json"
+							}, function(data) {
+								if(data.statusCode == 1) {
+									changeElementSign(param.modalId, result.pythonProperty.name);
+									$( _this ).dialog( "destroy" );
+								}
+							});
+							
+						}
+					},
+					{
+						class: "btn btn-default",			
+						text: "关闭",
+						click: function() {
+							$( this ).dialog( "destroy" );
+						}
+					}
+				];			
+	} else if(param.eletype == "linux") {
+		buttons = [
+					{
+						class: "btn btn-primary",			
+						text: "保存",
+						click: function() {
+							var _this = this;
+							var data = $("#" + param.modalId + "_linuxForm").serializeJSON();
+							var result = JSON.parse(data);
+							var linuxCore = {};
+							linuxCore["source"] = param.editor.getValue();
+							linuxCore["serverSourceId"] = $("#" + param.modalId + "_serverSourceId").val();
+							result["linuxCore"] = linuxCore; 
+							common.ajax({
+								url : "/flow/saveLinux",
+								type : "POST",
+								data : JSON.stringify(result),
+								contentType : "application/json"
+							}, function(data) {
+								if(data.statusCode == 1) {
+									changeElementSign(param.modalId, result.linuxProperty.name);
+									$( _this ).dialog( "destroy" );
+								}
+							});
+							
+						}
+					},
+					{
+						class: "btn btn-default",			
+						text: "关闭",
+						click: function() {
+							$( this ).dialog( "destroy" );
+						}
+					}
+				];			
 	} else if(param.eletype == "text") {
 		buttons = [
 			{
@@ -664,41 +741,78 @@ function setDialogBtns(param) {
 	} else if(param.eletype == "dataSource") {
 		buttons = [
 			{
-				class: "btn btn-default",			
+				class: "btn btn-default",
 				text: "增加",
 				click: function() {
-		 			$("#" + param.modalId + "_flowDataSourceTable").bootstrapTable('append',
-		 					{ "id":Math.uuid(), "name":"", "dbType":"MYSQL", "dbServer":"", 
-		 				    "dbPort":"", "dbName":"", "dbUserName":"",  "dbPwd":"", "note":"" });					
+					
+					$("#"+ param.modalId + "_tab").children("li").each(function() {
+						if($(this).hasClass("active") == true){
+							if($(this).attr("id") == "dbType") {
+					 			$("#" + param.modalId + "_flowDataSourceTable").bootstrapTable('append',
+				 					{ "id":Math.uuid(), "name":"", "dbType":"MYSQL", "dbServer":"", 
+				 				    "dbPort":"", "dbName":"", "dbUserName":"",  "dbPwd":"", "note":"" });								
+							} else if($(this).attr("id") == "serverType") {
+					 			$("#" + param.modalId + "_flowServerSourceTable").bootstrapTable('append',
+	                          			{"id":Math.uuid(), "_bTableName_":param.modalId  + "_flowServerSourceTable", "name":"", "type":"LINUX",  
+                      				"ip":"", "port":"", "userName":"", "pwd":"", "note":""});
+					 			
+							}
+						}
+					});
+					
 				}
 			},
 			{
 				class: "btn btn-default",			
 				text: "删除",
 				click: function() {
-		            var ids = $.map($("#" + param.modalId + "_flowDataSourceTable").bootstrapTable('getSelections'), function (row) {
-		                return row.id;
-		            });
-		            $("#" + param.modalId + "_flowDataSourceTable").bootstrapTable('remove', {
-		                field: 'id',
-		                values: ids
-		            });					
+					$("#"+ param.modalId + "_tab").children("li").each(function() {
+						if($(this).hasClass("active") == true){
+							if($(this).attr("id") == "dbType") {
+					            var ids = $.map($("#" + param.modalId + "_flowDataSourceTable").bootstrapTable('getSelections'), function (row) {
+					                return row.id;
+					            });
+					            $("#" + param.modalId + "_flowDataSourceTable").bootstrapTable('remove', {
+					                field: 'id',
+					                values: ids
+					            });									
+							} else if($(this).attr("id") == "serverType") {
+					            var ids = $.map($("#" + param.modalId + "_flowServerSourceTable").bootstrapTable('getSelections'), function (row) {
+					                return row.id;
+					            });
+					            $("#" + param.modalId + "_flowServerSourceTable").bootstrapTable('remove', {
+					                field: 'id',
+					                values: ids
+					            });									
+							}
+						}
+					});
+					
 				}
 			},
 			{
 				class: "btn btn-default",			
 				text: "清空",
 				click: function() {
-					$("#" + param.modalId + "_flowDataSourceTable").bootstrapTable('removeAll');
+					$("#"+ param.modalId + "_tab").children("li").each(function() {
+						if($(this).hasClass("active") == true){
+							if($(this).attr("id") == "dbType") {
+								$("#" + param.modalId + "_flowDataSourceTable").bootstrapTable('removeAll');
+							} else if($(this).attr("id") == "serverType") {
+								$("#" + param.modalId + "_flowServerSourceTable").bootstrapTable('removeAll');
+							}
+						}
+					});
+					
 				}
 			},
 			{
-				class: "btn btn-primary",			
+				class: "btn btn-primary",
 				text: "保存",
 				click: function() {
 					var _this = this;
+					var global = {"flowDataSources":[], "serverSources":[]};
 					var tableData = $("#" + param.modalId + "_flowDataSourceTable").bootstrapTable('getData');
-					var result = [];
 					for(var i=0; i<tableData.length; i++) {
 						var row={};
 						row["dataSourceId"] =tableData[i].id;
@@ -710,12 +824,27 @@ function setDialogBtns(param) {
 						row["dbUserName"] = tableData[i].dbUserName;
 						row["dbPwd"] = tableData[i].dbPwd;
 						row["note"] = tableData[i].note;
-						result.push(row);
+						global.flowDataSources.push(row);
 					}
+					
+					var flowServerSourceTableData = $("#" + param.modalId + "_flowServerSourceTable").bootstrapTable('getData');
+					for(var i=0; i<flowServerSourceTableData.length; i++) {
+						var row={};
+						row["id"] =flowServerSourceTableData[i].id;
+						row["name"] =flowServerSourceTableData[i].name;
+						row["type"] = flowServerSourceTableData[i].type;
+						row["ip"] = flowServerSourceTableData[i].ip;
+						row["port"] = flowServerSourceTableData[i].port;
+						row["userName"] = flowServerSourceTableData[i].userName;
+						row["pwd"] = flowServerSourceTableData[i].pwd;
+						row["note"] = flowServerSourceTableData[i].note;
+						global.serverSources.push(row);
+					}
+					
 					common.ajax({
-						url : "/flow/saveDataSource",
+						url : "/global/saveDataSource",
 						type : "POST",
-						data : JSON.stringify(result),
+						data : JSON.stringify(global),
 						contentType : "application/json"
 					}, function(data) {
 						if(data.statusCode == 1) {
@@ -881,7 +1010,45 @@ function createModalCallBack(param) {
 		param["editor"] = editor;
 		
 		initJavaModal(param.modalId, editor);
-	}  else if(param.eletype == "data") {
+	} else if(param.eletype == "python") {
+		var editor = ace.edit(param.modalId + "_editor");
+		editor.setTheme("ace/theme/eclipse");
+		editor.session.setMode("ace/mode/python");		 
+		editor.setFontSize(18);
+		editor.setReadOnly(false); 
+		editor.setOption("wrap", "off");
+		ace.require("ace/ext/language_tools");
+		editor.setOptions({
+			enableBasicAutocompletion: true,
+			enableSnippets: true,
+		    enableLiveAutocompletion: true
+		});		
+		editorScreen($("#" + param.modalId + "_modalId").val(), editor);
+		param["editor"] = editor;
+		
+		initPythonModal(param.modalId, editor);
+	} else if(param.eletype == "linux") {
+		$(".selectpicker").selectpicker({
+			noneSelectedText: "请选择",
+			liveSearch: true,
+			width:"100%"
+		});
+		var editor = ace.edit(param.modalId + "_editor");
+		editor.setTheme("ace/theme/eclipse");
+		editor.session.setMode("ace/mode/sh");		 
+		editor.setFontSize(18);
+		editor.setReadOnly(false); 
+		editor.setOption("wrap", "off");
+		ace.require("ace/ext/language_tools");
+		editor.setOptions({
+			enableBasicAutocompletion: true,
+			enableSnippets: true,
+		    enableLiveAutocompletion: true
+		});		
+		editorScreen($("#" + param.modalId + "_modalId").val(), editor);
+		param["editor"] = editor;
+		initLinuxModal(param.modalId, editor);
+	} else if(param.eletype == "data") {
 		$(".selectpicker").selectpicker({
 			noneSelectedText: "请选择",
 			liveSearch: true,

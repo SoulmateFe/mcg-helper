@@ -14,51 +14,49 @@
  * limitations under the License.
  */
 
-package com.mcg.entity.global.topology;
+package com.mcg.entity.flow.python;
 
 import java.io.Serializable;
+
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
-/**
- * 
- * @ClassName:   Topology   
- * @Description: TODO(流程下拉树状态数据) 
- * @author:      缪聪(mcg-helper@qq.com)
- * @date:        2018年7月28日 下午22:49:39  
- *
- */
+import org.hibernate.validator.constraints.NotBlank;
+
 @XmlAccessorType(XmlAccessType.NONE)
 @XmlRootElement
-public class Topology implements Serializable {
+public class PythonProperty implements Serializable {
 
-    private static final long serialVersionUID = -4836024504602850105L;
-    @XmlElement
-    private String id;
-    @XmlElement
-    private String pId;
-    @XmlElement
-    private String name;
+	private static final long serialVersionUID = 4924529253652851842L;
 
-    public String getId() {
-        return id;
-    }
-    public void setId(String id) {
-        this.id = id;
-    }
-    public String getpId() {
-        return pId;
-    }
-    public void setpId(String pId) {
-        this.pId = pId;
-    }
-    public String getName() {
-        return name;
-    }
-    public void setName(String name) {
-        this.name = name;
-    }
+	@NotBlank(message = "{flowPython.pythonProperty.key.notBlank}")
+	@XmlElement
+	private String key;
+	@NotBlank(message = "{flowPython.pythonProperty.name.notBlank}")
+	@XmlElement
+	private String name;
+	@XmlElement
+	private String pythonDesc;
+	
+	public String getKey() {
+		return key;
+	}
+	public void setKey(String key) {
+		this.key = key;
+	}
+	public String getName() {
+		return name;
+	}
+	public void setName(String name) {
+		this.name = name;
+	}
+	public String getPythonDesc() {
+		return pythonDesc;
+	}
+	public void setPythonDesc(String pythonDesc) {
+		this.pythonDesc = pythonDesc;
+	}
 
 }

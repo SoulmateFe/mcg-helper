@@ -31,6 +31,8 @@ import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
 import javax.xml.bind.Unmarshaller;
 
+import org.apache.commons.collections.CollectionUtils;
+
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.mcg.common.Constants;
@@ -46,8 +48,12 @@ import com.mcg.entity.flow.java.FlowJava;
 import com.mcg.entity.flow.java.FlowJavas;
 import com.mcg.entity.flow.json.FlowJson;
 import com.mcg.entity.flow.json.FlowJsons;
+import com.mcg.entity.flow.linux.FlowLinux;
+import com.mcg.entity.flow.linux.FlowLinuxs;
 import com.mcg.entity.flow.model.FlowModel;
 import com.mcg.entity.flow.model.FlowModels;
+import com.mcg.entity.flow.python.FlowPython;
+import com.mcg.entity.flow.python.FlowPythons;
 import com.mcg.entity.flow.script.FlowScript;
 import com.mcg.entity.flow.script.FlowScripts;
 import com.mcg.entity.flow.sequence.FlowSequence;
@@ -212,7 +218,31 @@ public class DataConverter {
                     webElementList.add(webElement); 
                     CachePlugin.put(flowJava.getId(), flowJava);
                 }
-            }            
+            }
+            if(flowStruct.getFlowPythons() != null && flowStruct.getFlowPythons().getFlowPython() != null && flowStruct.getFlowPythons().getFlowPython().size() > 0) {
+                List<FlowPython> flowPythonList = flowStruct.getFlowPythons().getFlowPython();
+                for(FlowPython flowPython : flowPythonList) {
+                    WebElement webElement = new WebElement();
+                    FlowBase flowBase = flowPython;
+                    flowBase.setName(flowPython.getPythonProperty().getName());
+                    webElement = setValue(flowBase, webElement);
+                    webElement.setId(flowPython.getId());
+                    webElementList.add(webElement); 
+                    CachePlugin.put(flowPython.getId(), flowPython);
+                }
+            }
+            if(flowStruct.getFlowLinuxs() != null && flowStruct.getFlowLinuxs().getFlowLinux() != null && flowStruct.getFlowLinuxs().getFlowLinux().size() > 0) {
+                List<FlowLinux> flowLinuxList = flowStruct.getFlowLinuxs().getFlowLinux();
+                for(FlowLinux flowLinux : flowLinuxList) {
+                    WebElement webElement = new WebElement();
+                    FlowBase flowBase = flowLinux;
+                    flowBase.setName(flowLinux.getLinuxProperty().getName());
+                    webElement = setValue(flowBase, webElement);
+                    webElement.setId(flowLinux.getId());
+                    webElementList.add(webElement); 
+                    CachePlugin.put(flowLinux.getId(), flowLinux);
+                }
+            }
             if(flowStruct.getFlowTexts() != null && flowStruct.getFlowTexts().getFlowText() != null && flowStruct.getFlowTexts().getFlowText().size() > 0) {
                 List<FlowText> flowTextList = flowStruct.getFlowTexts().getFlowText();
                 for(FlowText flowText : flowTextList) {
@@ -289,6 +319,10 @@ public class DataConverter {
             List<FlowScript> flowScriptList = new ArrayList<FlowScript>();
             FlowJavas flowJavas = new FlowJavas();
             List<FlowJava> flowJavaList = new ArrayList<FlowJava>();            
+            FlowPythons flowPythons = new FlowPythons();
+            List<FlowPython> flowPythonList = new ArrayList<FlowPython>();   
+            FlowLinuxs flowLinuxs = new FlowLinuxs();
+            List<FlowLinux> flowLinuxList = new ArrayList<FlowLinux>();            
             
             List<WebElement> webElementList = webStruct.getWebElement();
             for(WebElement webElement : webElementList) {
@@ -401,7 +435,7 @@ public class DataConverter {
                 	flowScript.setTop(webElement.getTop());
                 	flowScript.setSign(webElement.getSign()); 
                 	flowScriptList.add(flowScript);
-                }  else if(webElement.getEletype().equals(EletypeEnum.JAVA.getValue())) {
+                } else if(webElement.getEletype().equals(EletypeEnum.JAVA.getValue())) {
                 	FlowJava flowJava = (FlowJava)obj;
                 	flowJava.setLabel(webElement.getLabel());
                 	flowJava.setWidth(webElement.getWidth());
@@ -413,6 +447,30 @@ public class DataConverter {
                 	flowJava.setTop(webElement.getTop());
                 	flowJava.setSign(webElement.getSign());
                 	flowJavaList.add(flowJava);
+                } else if(webElement.getEletype().equals(EletypeEnum.PYTHON.getValue())) {
+                	FlowPython flowPython = (FlowPython)obj;
+                	flowPython.setLabel(webElement.getLabel());
+                	flowPython.setWidth(webElement.getWidth());
+                	flowPython.setHeight(webElement.getHeight());
+                	flowPython.setClassname(webElement.getClassname());
+                	flowPython.setEletype(webElement.getEletype());
+                	flowPython.setClone(webElement.getClone());
+                	flowPython.setLeft(webElement.getLeft());
+                	flowPython.setTop(webElement.getTop());
+                	flowPython.setSign(webElement.getSign());
+                	flowPythonList.add(flowPython);
+                } else if(webElement.getEletype().equals(EletypeEnum.LINUX.getValue())) {
+                	FlowLinux flowLinux = (FlowLinux)obj;
+                	flowLinux.setLabel(webElement.getLabel());
+                	flowLinux.setWidth(webElement.getWidth());
+                	flowLinux.setHeight(webElement.getHeight());
+                	flowLinux.setClassname(webElement.getClassname());
+                	flowLinux.setEletype(webElement.getEletype());
+                	flowLinux.setClone(webElement.getClone());
+                	flowLinux.setLeft(webElement.getLeft());
+                	flowLinux.setTop(webElement.getTop());
+                	flowLinux.setSign(webElement.getSign());
+                	flowLinuxList.add(flowLinux);
                 } else if(webElement.getEletype().equals(EletypeEnum.END.getValue())) {
                     FlowEnd flowEnd = (FlowEnd)obj;
                     flowEnd.setLabel(webElement.getLabel());
@@ -446,6 +504,10 @@ public class DataConverter {
             flowStruct.setFlowScripts(flowScripts);
             flowJavas.setFlowJava(flowJavaList);
             flowStruct.setFlowJavas(flowJavas);
+            flowPythons.setFlowPython(flowPythonList);
+            flowStruct.setFlowPythons(flowPythons);  
+            flowLinuxs.setFlowLinux(flowLinuxList);
+            flowStruct.setFlowLinuxs(flowLinuxs);             
             
             flowStruct.setTotalSize(webElementList.size());
             
@@ -636,15 +698,17 @@ public class DataConverter {
 		for(Order order : orderList) {
 			if(elementId.equals(order.getElementId())) {
 				List<String> ids = order.getPid();
-				for(int i=0; i<ids.size(); i++) {
-					if(executeStruct.getRunResultMap().get(ids.get(i)).getJsonVar() != null && !"".equals(executeStruct.getRunResultMap().get(ids.get(i)).getJsonVar())) {
-						sb.append(executeStruct.getRunResultMap().get(ids.get(i)).getJsonVar().substring(1, executeStruct.getRunResultMap().get(ids.get(i)).getJsonVar().length()-1 ));
-						sb.append(",");
+				if(!CollectionUtils.isEmpty(ids)) {
+					for(int i=0; i<ids.size(); i++) {
+						if(executeStruct.getRunResultMap().get(ids.get(i)).getJsonVar() != null && !"".equals(executeStruct.getRunResultMap().get(ids.get(i)).getJsonVar())) {
+							sb.append(executeStruct.getRunResultMap().get(ids.get(i)).getJsonVar().substring(1, executeStruct.getRunResultMap().get(ids.get(i)).getJsonVar().length()-1 ));
+							sb.append(",");
+						}
+						
 					}
-					
-				}
-				if(sb.length() >= 2) {
-				    sb.deleteCharAt(sb.length()-1);
+					if(sb.length() >= 2) {
+					    sb.deleteCharAt(sb.length()-1);
+					}
 				}
 			}
 		}

@@ -25,7 +25,9 @@ import com.mcg.entity.flow.end.FlowEnd;
 import com.mcg.entity.flow.gmybatis.FlowGmybatis;
 import com.mcg.entity.flow.java.FlowJava;
 import com.mcg.entity.flow.json.FlowJson;
+import com.mcg.entity.flow.linux.FlowLinux;
 import com.mcg.entity.flow.model.FlowModel;
+import com.mcg.entity.flow.python.FlowPython;
 import com.mcg.entity.flow.script.FlowScript;
 import com.mcg.entity.flow.sqlexecute.FlowSqlExecute;
 import com.mcg.entity.flow.sqlquery.FlowSqlQuery;
@@ -144,6 +146,20 @@ public class FlowTask implements Runnable {
                     flowBody.setEleType(EletypeEnum.JAVA.getValue());
                     flowBody.setEleTypeDesc(EletypeEnum.JAVA.getName() + "--》" + flowJava.getJavaProperty().getName());
                     flowBody.setEleId(flowJava.getId());
+                    flowBody.setComment("运行值");
+                } else if(mcgProduct instanceof FlowPython) {
+                    FlowPython flowPython = (FlowPython)mcgProduct;
+                    result = director.getFlowPythonProduct(flowPython).build(executeStruct);
+                    flowBody.setEleType(EletypeEnum.PYTHON.getValue());
+                    flowBody.setEleTypeDesc(EletypeEnum.PYTHON.getName() + "--》" + flowPython.getPythonProperty().getName());
+                    flowBody.setEleId(flowPython.getId());
+                    flowBody.setComment("运行值");
+                } else if(mcgProduct instanceof FlowLinux) {
+                	FlowLinux flowLinux = (FlowLinux)mcgProduct;
+                    result = director.getFlowLinuxProduct(flowLinux).build(executeStruct);
+                    flowBody.setEleType(EletypeEnum.LINUX.getValue());
+                    flowBody.setEleTypeDesc(EletypeEnum.LINUX.getName() + "--》" + flowLinux.getLinuxProperty().getName());
+                    flowBody.setEleId(flowLinux.getId());
                     flowBody.setComment("运行值");
                 } else if(mcgProduct instanceof FlowEnd) {
                     FlowEnd flowEnd = (FlowEnd)mcgProduct;

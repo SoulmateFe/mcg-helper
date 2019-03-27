@@ -42,7 +42,9 @@ import com.mcg.entity.flow.end.FlowEnd;
 import com.mcg.entity.flow.gmybatis.FlowGmybatis;
 import com.mcg.entity.flow.java.FlowJava;
 import com.mcg.entity.flow.json.FlowJson;
+import com.mcg.entity.flow.linux.FlowLinux;
 import com.mcg.entity.flow.model.FlowModel;
+import com.mcg.entity.flow.python.FlowPython;
 import com.mcg.entity.flow.script.FlowScript;
 import com.mcg.entity.flow.sqlexecute.FlowSqlExecute;
 import com.mcg.entity.flow.sqlquery.FlowSqlQuery;
@@ -245,6 +247,46 @@ public class FlowController extends BaseController {
 		return mcgResult;
 	}  	
 	
+	@RequestMapping(value="savePython", method=RequestMethod.POST, produces = "application/json;charset=UTF-8")
+	@ResponseBody
+	public McgResult savePython(@Valid @RequestBody FlowPython flowPython, BindingResult result, HttpSession session) {
+        Message message = MessagePlugin.getMessage();
+        message.getHeader().setMesType(MessageTypeEnum.NOTIFY);     
+        NotifyBody notifyBody = new NotifyBody();       
+        McgResult mcgResult = new McgResult();
+        
+        if(Tools.validator(result, mcgResult, notifyBody)) {
+            flowPython.setName(flowPython.getPythonProperty().getName());
+            CachePlugin.put(flowPython.getId(), flowPython);
+            notifyBody.setContent("Python控件保存成功！");
+            notifyBody.setType(LogTypeEnum.SUCCESS.getValue());            
+        }
+
+        message.setBody(notifyBody);
+        MessagePlugin.push(session.getId(), message);        
+		return mcgResult;
+	}
+	
+	@RequestMapping(value="saveLinux", method=RequestMethod.POST, produces = "application/json;charset=UTF-8")
+	@ResponseBody
+	public McgResult saveLinux(@Valid @RequestBody FlowLinux flowLinux, BindingResult result, HttpSession session) {
+        Message message = MessagePlugin.getMessage();
+        message.getHeader().setMesType(MessageTypeEnum.NOTIFY);     
+        NotifyBody notifyBody = new NotifyBody();       
+        McgResult mcgResult = new McgResult();
+        
+        if(Tools.validator(result, mcgResult, notifyBody)) {
+            flowLinux.setName(flowLinux.getLinuxProperty().getName());
+            CachePlugin.put(flowLinux.getId(), flowLinux);
+            notifyBody.setContent("Linux控件保存成功！");
+            notifyBody.setType(LogTypeEnum.SUCCESS.getValue());            
+        }
+
+        message.setBody(notifyBody);
+        MessagePlugin.push(session.getId(), message);        
+		return mcgResult;
+	}	
+	
 	@RequestMapping(value="saveData", method=RequestMethod.POST, produces = "application/json;charset=UTF-8")
 	@ResponseBody
 	public McgResult saveData(@Valid @RequestBody FlowData flowData, BindingResult result, HttpSession session) {
@@ -370,7 +412,7 @@ public class FlowController extends BaseController {
             message.getHeader().setMesType(MessageTypeEnum.NOTIFY); 
             
             message.setBody(notifyBody);
-            MessagePlugin.push(session.getId(), message);  
+            MessagePlugin.push(session.getId(), message);
         }
 
         return mcgResult;
